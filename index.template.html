@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>weir_model</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(300px, 400px) 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Info Panel Styles */
+    .info-card {
+      background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .info-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .info-text {
+      line-height: 1.6;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .equation {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid #2563eb;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .equation .info-text:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Video Panel Styles */
+    .video-card {
+      background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .video-container {
+      width: 100%;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: #000;
+      aspect-ratio: 16/9;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Calculator Section Styles */
+    .calculator-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Tabs/Radio Buttons */
+    .tabs {
+      display: inline-flex;
+      background: white;
+      padding: 0.75rem;
+      border-radius: 9999px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabs input[type="radio"] {
+      display: none;
+    }
+
+    .tabs label {
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .tabs input[type="radio"]:checked + label {
+      background: #eff6ff;
+      color: #2563eb;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Slider Styles */
+    .slider-container {
+      margin: 2rem 0;
+    }
+
+    .slider-label {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: #1e3a8a;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 12px;
+      -webkit-appearance: none;
+      background: #e5e7eb;
+      border-radius: 9999px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: #2563eb;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .weir-image {
+      width: 100%;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .weir-image:hover {
+      transform: scale(1.02);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-box {
+      background: #eff6ff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin-top: 0.25rem;
+    }
+
+    .flow-result {
+      background: #eff6ff;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1rem;
+    }
+
+    /* Unit Selector */
+    .unit-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .unit-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid #2563eb;
+      border-radius: 9999px;
+      background: transparent;
+      color: #2563eb;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .unit-btn:hover {
+      background: #eff6ff;
+    }
+
+    .unit-btn.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    /* Milk Jugs Section */
+    .milk-jugs {
+      background: #ecfdf5;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .milk-jugs-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .milk-jug-icon {
+      width: 4rem;
+      height: 4rem;
+      object-fit: contain;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .info-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .tabs label {
+        padding: 0.75rem 1.5rem;
+      }
+      
+      .card {
+        padding: 1rem;
+      }
+      
+      .info-title {
+        font-size: 1.5rem;
+      }
+      
+      .video-container {
+        margin-top: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Info Panel -->
+    <div class="info-card">
+      <h1 class="info-title">V-Notch (Triangular) Weirs</h1>
+      <p class="info-text">
+        Weirs are the simplest, least expensive, and probably the most common type of primary measuring device used to measure flow in open channels. A weir is essentially an obstruction or dam built across an open channel over which the liquid flows, often through a specially shaped opening or notch. Weirs are normally classified according to the shape of the notch. The most common type of weir is the rectangular weir, the V-notch (or triangular) weir.
+      </p>
+      <p class="info-text">
+        Each type of weir has an associated equation for determining the flow rate through the weir. The equation is based on the depth of the liquid in the pool formed upstream from the weir.
+      </p>
+      <p class="info-text">
+        The edge or surface over which the liquid passes is called the crest of the weir. Note that the V-notch weir comes to a point at the bottom, so it has no actual crest length; the point may be thought of as the "crest" of a V-notch weir. Generally, the top edge of the weir is thin or beveled with a sharp upstream corner so that the liquid does not contact any part of the weir structure downstream but, rather, springs past it.
+      </p>
+      <div class="equation">
+        <p class="info-text">
+          The simplified discharge (head vs. flow rate) equation used in this example takes the form:
+        </p>
+        <p class="info-text" style="font-weight: 500;">
+          Q = K H<sup>2.5</sup>
+        </p>
+        <p class="info-text">
+          where:<br>
+          Q = flow rate<br>
+          H = head on the weir<br>
+          K = a constant, dependent on the angle of notch and units of measurement
+        </p>
+      </div>
+    </div>
+
+    <!-- Calculator Section -->
+    <div class="calculator-section">
+      <!-- Input Card -->
+      <div class="card">
+        <h2 class="card-title">V-Notch Weir Calculator</h2>
+        
+        <!-- Angle Selection -->
+        <div class="tabs">
+          <input type="radio" id="90deg" name="angle" checked>
+          <label for="90deg">90°</label>
+          <input type="radio" id="120deg" name="angle">
+          <label for="120deg">120°</label>
+        </div>
+
+        <!-- Head Selection -->
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Head: <span id="headValue">0.25</span> ft</span>
+            <span>(<span id="headInches">3</span> inches)</span>
+          </div>
+          <input 
+            type="range" 
+            id="headSlider" 
+            min="0.25" 
+            max="2" 
+            step="0.25" 
+            value="0.25"
+          >
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results">
+        <div class="results-grid">
+          <!-- Weir Configuration Card -->
+          <div class="card">
+            <h3 class="card-title">Weir Configuration</h3>
+            <img id="weirImage" class="weir-image" src="" alt="V-Notch Weir">
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="stat-label">Angle</div>
+                <div class="stat-value"><span id="angleDisplay">90</span>°</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Head</div>
+                <div class="stat-value"><span id="headDisplay">3</span>"</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flow Results Card -->
+          <div class="card">
+            <h3 class="card-title">Flow Results</h3>
+            <div class="flow-result">
+              <div class="stat-label">Flow Rate</div>
+              <div class="stat-value">
+                <span id="flowRate">0</span>
+                <span id="currentUnit">GPM</span>
+              </div>
+              <div class="unit-selector">
+                <button class="unit-btn active" data-unit="GPM">GPM</button>
+                <button class="unit-btn" data-unit="CFS">ft³/s</button>
+                <button class="unit-btn" data-unit="LPS">L/s</button>
+              </div>
+            </div>
+            
+              
+          </div>
+        </div>
+
+        <!-- Video Card -->
+        <div class="video-card">
+          <h3 class="card-title">Weir Flow Visualization</h3>
+          <div class="video-container">
+        <video autoplay loop muted playsinline>
+              <source src="https://i.imgur.com/uRvl7lG.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// Discharge data for different angles and heads
+const DISCHARGE_DATA = {
+  90: {
+    0.25: { inches: 3, gpm: 29.1977 },
+    0.50: { inches: 6, gpm: 165.1669 },
+    0.75: { inches: 9, gpm: 455.1466 },
+    1.00: { inches: 12, gpm: 934.3253 },
+    1.25: { inches: 15, gpm: 1632.1992 },
+    1.50: { inches: 18, gpm: 2574.6979 },
+    1.75: { inches: 21, gpm: 3785.2385 },
+    2.00: { inches: 24, gpm: 5285.3422 }
+  },
+  120: {
+    0.25: { inches: 3, gpm: 50.5704 },
+    0.50: { inches: 6, gpm: 286.0691 },
+    0.75: { inches: 9, gpm: 788.3139 },
+    1.00: { inches: 12, gpm: 1618.2515 },
+    1.25: { inches: 15, gpm: 2826.9690 },
+    1.50: { inches: 18, gpm: 4459.3767 },
+    1.75: { inches: 21, gpm: 6556.0330 },
+    2.00: { inches: 24, gpm: 9154.2127 }
+  }
+};
+
+// Image URLs for different configurations
+const IMAGE_URLS = {
+  90: {
+    3: 'https://i.imgur.com/6DXjsie.png',
+    6: 'https://i.imgur.com/0EBNf6U.png',
+    9: 'https://i.imgur.com/T17zSVm.png',
+    12: 'https://i.imgur.com/bBDEpvW.png',
+    15: 'https://i.imgur.com/9RaMgjq.png',
+    18: 'https://i.imgur.com/YuwQAIj.png',
+    21: 'https://i.imgur.com/R5J83Ha.png',
+    24: 'https://i.imgur.com/A82ZZar.png'
+  },
+  120: {
+    3: 'https://i.imgur.com/JBeZ9N8.png',
+    6: 'https://i.imgur.com/Gy6hEIf.png',
+    9: 'https://i.imgur.com/Q8YAX2s.png',
+    12: 'https://i.imgur.com/v9cMCWe.png',
+    15: 'https://i.imgur.com/XJ1ADZl.png',
+    18: 'https://i.imgur.com/eYPrmbC.png',
+    21: 'https://i.imgur.com/tkFf2Wz.png',
+    24: 'https://i.imgur.com/MzRyY6O.png'
+  }
+};
+
+// Simplified unit conversion factors
+const UNIT_CONVERSIONS = {
+  GPM: {
+    factor: 1,
+    format: (val) => val.toFixed(2)
+  },
+  CFS: {
+    factor: 0.002228446,
+    format: (val) => val.toFixed(4)
+  },
+  LPS: {
+    factor: 0.0630902,
+    format: (val) => val.toFixed(2)
+  }
+};
+
+// State management
+let currentFlowGPM = 0;
+
+// DOM Elements
+const headSlider = document.getElementById('headSlider');
+const headValue = document.getElementById('headValue');
+const headInches = document.getElementById('headInches');
+const angleInputs = document.querySelectorAll('input[name="angle"]');
+const weirImage = document.getElementById('weirImage');
+const angleDisplay = document.getElementById('angleDisplay');
+const headDisplay = document.getElementById('headDisplay');
+const flowRate = document.getElementById('flowRate');
+const currentUnit = document.getElementById('currentUnit');
+const unitButtons = document.querySelectorAll('.unit-btn');
+
+// Update slider background gradient
+function updateSliderBackground(value) {
+  const percentage = ((value - 0.25) / (2 - 0.25)) * 100;
+  headSlider.style.background = `linear-gradient(90deg, 
+    rgb(37, 99, 235) ${percentage}%, 
+    rgb(229, 231, 235) ${percentage}%)`;
+}
+
+// Update flow rate display with unit conversion
+function updateFlowRate(gpm, unit = 'GPM') {
+  currentFlowGPM = gpm;
+  const conversion = UNIT_CONVERSIONS[unit];
+  const convertedValue = gpm * conversion.factor;
+  flowRate.textContent = conversion.format(convertedValue);
+  currentUnit.textContent = unit;
+}
+
+// Update head display in both feet and inches
+function updateHeadDisplay(value) {
+  const inches = value * 12;
+  headValue.textContent = value.toFixed(2);
+  headInches.textContent = inches.toFixed(0);
+}
+
+function calculateDischarge(angle, head) {
+  const discharge = DISCHARGE_DATA[angle][head];
+  return discharge;
+}
+
+// Update the weir image
+function updateWeirImage(angle, inches) {
+  weirImage.src = IMAGE_URLS[angle][inches];
+  weirImage.alt = `${angle}° V-Notch Weir with ${inches}" head`;
+}
+
+// Update all displays with new calculation
+function updateDisplays(angle, head) {
+  const discharge = calculateDischarge(angle, head);
+  
+  updateWeirImage(angle, discharge.inches);
+  angleDisplay.textContent = angle;
+  headDisplay.textContent = discharge.inches;
+  updateFlowRate(discharge.gpm, document.querySelector('.unit-btn.active').dataset.unit);
+}
+
+// Event Listeners
+headSlider.addEventListener('input', (e) => {
+  const value = parseFloat(e.target.value);
+  const angle = document.getElementById('90deg').checked ? 90 : 120;
+  
+  updateHeadDisplay(value);
+  updateSliderBackground(value);
+  updateDisplays(angle, value);
+});
+
+// Angle selection handler
+angleInputs.forEach(input => {
+  input.addEventListener('change', () => {
+    const angle = input.id === '90deg' ? 90 : 120;
+    const head = parseFloat(headSlider.value);
+    updateDisplays(angle, head);
+  });
+});
+
+// Unit selection handler
+unitButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    unitButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    const unit = button.dataset.unit;
+    updateFlowRate(currentFlowGPM, unit);
+  });
+});
+
+// Initialize
+function initialize() {
+  const initialAngle = 90;
+  const initialHead = 0.25;
+  
+  updateSliderBackground(initialHead);
+  updateHeadDisplay(initialHead);
+  updateDisplays(initialAngle, initialHead);
+}
+
+// Run initialization
+document.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
